@@ -104,7 +104,9 @@ namespace FullRareSetManager
                 _currentAlerts.ContainsKey(entity))
                 return;
 
-            var item = entity.GetComponent<WorldItem>().ItemEntity;
+            var item = entity?.GetComponent<WorldItem>()?.ItemEntity;
+
+            if (item == null) return;
 
             var visitResult = ProcessItem(item);
 
