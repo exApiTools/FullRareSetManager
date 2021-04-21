@@ -41,6 +41,8 @@ namespace FullRareSetManager
                 // Nothing to see here officer.
             }
 
+            return SwitchToTabViaArrowKeys(tabIndex); // TODO Fix tab switching via mouse
+
             var _clickWindowOffset = GameController.Window.GetWindowRectangle().TopLeft;
 
             // We want to maximum wait 20 times the Current Latency before giving up in our while loops.
