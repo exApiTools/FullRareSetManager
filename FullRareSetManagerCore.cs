@@ -288,7 +288,7 @@ namespace FullRareSetManager
             {
                 // Sell to vendor.
                 var gameWindow = GameController.Window.GetWindowRectangle().TopLeft;
-                var latency = (int) GameController.Game.IngameState.CurLatency;
+                var latency = (int) GameController.Game.IngameState.ServerData.Latency;
 
                 var npcTradingWindow = GameController.Game.IngameState.IngameUi.SellWindow;
 
@@ -391,7 +391,7 @@ namespace FullRareSetManager
             var stashPanel = GameController.IngameState.IngameUi.StashElement;
             var stashNames = stashPanel.AllStashNames;
             var gameWindowPos = GameController.Window.GetWindowRectangle();
-            var latency = (int) GameController.Game.IngameState.CurLatency + Settings.ExtraDelay;
+            var latency = (int) GameController.Game.IngameState.ServerData.Latency + Settings.ExtraDelay;
             var cursorPosPreMoving = Mouse.GetCursorPosition();
 
             // Iterrate through all the different item types.

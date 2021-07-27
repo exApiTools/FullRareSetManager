@@ -22,7 +22,7 @@ namespace FullRareSetManager
 
         public bool SwitchToTab(int tabIndex, FullRareSetManagerSettings Settings)
         {
-            var latency = (int) GameController.Game.IngameState.CurLatency;
+            var latency = (int) GameController.Game.IngameState.ServerData.Latency;
 
             // We don't want to Switch to a tab that we are already on
             var openLeftPanel = GameController.Game.IngameState.IngameUi.OpenLeftPanel;
@@ -144,7 +144,7 @@ namespace FullRareSetManager
 
         private bool SwitchToTabViaArrowKeys(int tabIndex)
         {
-            var latency = (int) GameController.Game.IngameState.CurLatency;
+            var latency = (int) GameController.Game.IngameState.ServerData.Latency;
             var indexOfCurrentVisibleTab = GameController.Game.IngameState.IngameUi.StashElement.IndexVisibleStash; // GetIndexOfCurrentVisibleTab();
             var difference = tabIndex - indexOfCurrentVisibleTab;
             var negative = difference < 0;
