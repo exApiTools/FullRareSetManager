@@ -1106,7 +1106,7 @@ namespace FullRareSetManager
             var playerInv = GameController.Game.IngameState.IngameUi.InventoryPanel[InventoryIndex.PlayerInventory];
             var visibleInventoryItems = playerInv.VisibleInventoryItems;
 
-            if (visibleInventoryItems == null)
+            if (visibleInventoryItems == null || visibleInventoryItems.Count == 0)
                 return;
 
             if (playerInv.HoverItem != null && !Settings.LablesWhileHovered)
@@ -1180,6 +1180,9 @@ namespace FullRareSetManager
 
             if (GameController.Game.IngameState.IngameUi.ZanaMissionChoice.IsVisible)
                 return false;
+
+            if (Settings.Ignore1 && data.PriorityPercent == 1 && 
+                !(data.BaseData.PartName == "Amulets" || data.BaseData.PartName == "Rings")) return false;
 
             var ui = GameController.Game.IngameState.IngameUi;
             var shouldUpdate = false;
