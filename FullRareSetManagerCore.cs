@@ -265,6 +265,8 @@ namespace FullRareSetManager
                 }
             }
 
+            // TODO:1
+
             if (!_bDropAllItems)
                 DrawSetsInfo();
 
@@ -488,12 +490,16 @@ namespace FullRareSetManager
         {
             var stash = GameController.IngameState.IngameUi.StashElement;
             var leftPanelOpened = stash.IsVisible;
+            var isWhitelisted = (Settings.OnlyAllowedStashTabs.Value) 
+                ? Settings.AllowedStashTabs.Contains(stash.IndexVisibleStash)
+                : true;
 
             if (leftPanelOpened)
             {
+                // TODO:2
                 if (_currentSetData.BSetIsReady && _currentOpenedStashTab != null)
                 {
-                    var visibleInventoryItems = _currentOpenedStashTab.VisibleInventoryItems;
+                    var visibleInventoryItems = _currentOpenedStashTab?.VisibleInventoryItems ?? null;
 
                     if (visibleInventoryItems != null)
                     {
@@ -801,8 +807,7 @@ namespace FullRareSetManager
                 }
 
                 var stash = stashPanel.GetStashInventoryByIndex(i);
-
-                var visibleInventoryItems = stash?.VisibleInventoryItems;
+                var visibleInventoryItems = stash?.VisibleInventoryItems ?? null;
 
                 if (visibleInventoryItems == null)
                     continue;
@@ -820,6 +825,9 @@ namespace FullRareSetManager
 
                 var items = new List<StashItem>();
                 needUpdateAllInfo = true;
+
+                if (visibleInventoryItems == null)
+                    continue;
 
                 foreach (var invItem in visibleInventoryItems)
                 {
@@ -1104,7 +1112,7 @@ namespace FullRareSetManager
                 return;
 
             var playerInv = GameController.Game.IngameState.IngameUi.InventoryPanel[InventoryIndex.PlayerInventory];
-            var visibleInventoryItems = playerInv.VisibleInventoryItems;
+            var visibleInventoryItems = playerInv.VisibleInventoryItems ?? null;
 
             if (visibleInventoryItems == null || visibleInventoryItems.Count == 0)
                 return;
