@@ -278,13 +278,23 @@ namespace FullRareSetManager
         {
             try
             {
+                // define sell window
+                SellWindow npcSellWindow = null;
+
                 // Sell to vendor.
                 var gameWindow = GameController.Window.GetWindowRectangle().TopLeft;
                 var latency = (int) GameController.Game.IngameState.ServerData.Latency;
 
                 var npcTradingWindow = GameController.Game.IngameState.IngameUi.SellWindow;
+                var npcTradingWindowHideout = GameController.Game.IngameState.IngameUi.SellWindowHideout;
 
-                if (!npcTradingWindow.IsVisible)
+                // check which sell window it could be
+                if (npcTradingWindow.IsVisible)
+                    npcSellWindow = npcTradingWindow;
+                if (npcTradingWindowHideout.IsVisible)
+                    npcSellWindow = npcTradingWindowHideout;
+
+                if (!npcSellWindow.IsVisible || npcSellWindow == null)
                 {
                     // The vendor sell window is not open, but is in memory (it would've went straigth to catch if that wasn't the case).
                     LogMessage("Error: npcTradingWindow is not visible (opened)!", 5);
