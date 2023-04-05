@@ -3,6 +3,7 @@ using System.Threading;
 using System.Windows.Forms;
 using ExileCore;
 using ExileCore.PoEMemory.MemoryObjects;
+using ExileCore.Shared.Helpers;
 using FullRareSetManager.Utilities;
 using SharpDX;
 
@@ -20,9 +21,9 @@ namespace FullRareSetManager
 
         private GameController GameController => _plugin.GameController;
 
-        public bool SwitchToTab(int tabIndex, FullRareSetManagerSettings Settings)
+        public bool SwitchToTab(int tabIndex, FullRareSetManagerSettings settings)
         {
-            var latency = (int) GameController.Game.IngameState.ServerData.Latency;
+            var latency = (int)GameController.Game.IngameState.ServerData.Latency;
 
             // We don't want to Switch to a tab that we are already on
             var openLeftPanel = GameController.Game.IngameState.IngameUi.OpenLeftPanel;
@@ -43,7 +44,7 @@ namespace FullRareSetManager
 
             return SwitchToTabViaArrowKeys(tabIndex); // TODO Fix tab switching via mouse
 
-            var _clickWindowOffset = GameController.Window.GetWindowRectangle().TopLeft;
+            var clickWindowOffset = GameController.Window.GetWindowRectangle().TopLeft.ToVector2Num();
 
             // We want to maximum wait 20 times the Current Latency before giving up in our while loops.
             var maxNumberOfTries = latency * 20 > 2000 ? latency * 20 / WHILE_DELAY : 2000 / WHILE_DELAY;
@@ -68,10 +69,10 @@ namespace FullRareSetManager
                 if (!dropDownTabElements.IsVisible)
                 {
                     var pos = viewAllTabsButton.GetClientRect();
-                    Mouse.SetCursorPosAndLeftClick(pos.Center + _clickWindowOffset, Settings.ExtraDelay);
+                    Mouse.SetCursorPosAndLeftClick(pos.Center.ToVector2Num() + clickWindowOffset, settings.ExtraDelay);
 
                     //Thread.Sleep(200);
-                    Thread.Sleep(latency + Settings.ExtraDelay);
+                    Thread.Sleep(latency + settings.ExtraDelay);
                     var brCounter = 0;
 
                     //while (1 == 2 && !dropDownTabElements.IsVisible)
@@ -89,7 +90,7 @@ namespace FullRareSetManager
                     {
                         // TODO:Zafaar implemented something that allows us to get in contact with the ScrollBar.
                         Mouse.VerticalScroll(true, 5);
-                        Thread.Sleep(latency + Settings.ExtraDelay);
+                        Thread.Sleep(latency + settings.ExtraDelay);
                     }
                 }
 
@@ -99,8 +100,8 @@ namespace FullRareSetManager
                 // 1 is the name of the tab.
                 // 2 is the slider.
                 var totalStashes = GameController.Game.IngameState.IngameUi.StashElement.TotalStashes;
-                var slider = false;// dropDownTabElements.Children[1].ChildCount == totalStashes;
-                var noSlider = true;// dropDownTabElements.Children[2].ChildCount == totalStashes;
+                var slider = false; // dropDownTabElements.Children[1].ChildCount == totalStashes;
+                var noSlider = true; // dropDownTabElements.Children[2].ChildCount == totalStashes;
                 RectangleF tabPos;
 
                 if (slider)
@@ -109,13 +110,12 @@ namespace FullRareSetManager
                     tabPos = dropDownTabElements.GetChildAtIndex(2).GetChildAtIndex(tabIndex).GetClientRect();
                 else
                 {
-                    
                     //BasePlugin.LogError("Couldn't detect slider/non-slider, contact Preaches [Stashie]", 3);
                     return false;
                 }
 
-                Mouse.SetCursorPosAndLeftClick(tabPos.Center + _clickWindowOffset, Settings.ExtraDelay);
-                Thread.Sleep(latency + Settings.ExtraDelay);
+                Mouse.SetCursorPosAndLeftClick(tabPos.Center.ToVector2Num() + clickWindowOffset, settings.ExtraDelay);
+                Thread.Sleep(latency + settings.ExtraDelay);
             }
             catch (Exception e)
             {
@@ -144,7 +144,7 @@ namespace FullRareSetManager
 
         private bool SwitchToTabViaArrowKeys(int tabIndex)
         {
-            var latency = (int) GameController.Game.IngameState.ServerData.Latency;
+            var latency = GameController.Game.IngameState.ServerData.Latency;
             var indexOfCurrentVisibleTab = GameController.Game.IngameState.IngameUi.StashElement.IndexVisibleStash; // GetIndexOfCurrentVisibleTab();
             var difference = tabIndex - indexOfCurrentVisibleTab;
             var negative = difference < 0;
