@@ -104,18 +104,26 @@ namespace FullRareSetManager
                 _currentAlerts.ContainsKey(entity))
                 return;
 
-            var item = entity.GetComponent<WorldItem>().ItemEntity;
+            var item = entity?.GetComponent<WorldItem>()?.ItemEntity;
+
+            if (item == null) return;
 
             var visitResult = ProcessItem(item);
 
-            if (visitResult == null)
-                return;
+            if (visitResult == null) return;
 
             if (Settings.IgnoreOneHanded && visitResult.ItemType == StashItemType.OneHanded)
                 visitResult = null;
 
-            if (visitResult == null)
-                return;
+            if (visitResult == null) return;
+
+            if (Settings.SmallWeaponOnly && (visitResult.ItemType == StashItemType.OneHanded || 
+                                             visitResult.ItemType == StashItemType.TwoHanded)
+                                         && (visitResult.Height > 3 ||
+                                             visitResult.Width > 1))
+                visitResult = null;
+
+            if (visitResult == null) return;
 
             var index = (int) visitResult.ItemType;
 
@@ -256,6 +264,8 @@ namespace FullRareSetManager
                     UpdateItemsSetsInfo();
                 }
             }
+
+            // TODO:1
 
             if (!_bDropAllItems)
                 DrawSetsInfo();
@@ -490,12 +500,16 @@ namespace FullRareSetManager
         {
             var stash = GameController.IngameState.IngameUi.StashElement;
             var leftPanelOpened = stash.IsVisible;
+            var isWhitelisted = (Settings.OnlyAllowedStashTabs.Value) 
+                ? Settings.AllowedStashTabs.Contains(stash.IndexVisibleStash)
+                : true;
 
             if (leftPanelOpened)
             {
+                // TODO:2
                 if (_currentSetData.BSetIsReady && _currentOpenedStashTab != null)
                 {
-                    var visibleInventoryItems = _currentOpenedStashTab.VisibleInventoryItems;
+                    var visibleInventoryItems = _currentOpenedStashTab?.VisibleInventoryItems ?? null;
 
                     if (visibleInventoryItems != null)
                     {
@@ -566,7 +580,7 @@ namespace FullRareSetManager
             var posX = Settings.PositionX.Value;
             var posY = Settings.PositionY.Value;
 
-            var rect = new RectangleF(posX, posY, 230, 200);
+            var rect = new RectangleF(posX, posY, 230 * Settings.WidthMultiplier, 280 * Settings.HeightMultiplier);
             Graphics.DrawBox(rect, new Color(0, 0, 0, 200));
             Graphics.DrawFrame(rect, Color.White, 2);
 
@@ -715,6 +729,8 @@ namespace FullRareSetManager
 
             if (chaosSets <= 0 && regalSetMaxCount <= 0)
                 return;
+            if (chaosSets <= 0 && Settings.OptimizeChaosSets.Value)
+                return;
 
             {
                 var maxAvailableReplaceCount = 0;
@@ -801,8 +817,7 @@ namespace FullRareSetManager
                 }
 
                 var stash = stashPanel.GetStashInventoryByIndex(i);
-
-                var visibleInventoryItems = stash?.VisibleInventoryItems;
+                var visibleInventoryItems = stash?.VisibleInventoryItems ?? null;
 
                 if (visibleInventoryItems == null)
                     continue;
@@ -820,6 +835,9 @@ namespace FullRareSetManager
 
                 var items = new List<StashItem>();
                 needUpdateAllInfo = true;
+
+                if (visibleInventoryItems == null)
+                    continue;
 
                 foreach (var invItem in visibleInventoryItems)
                 {
@@ -937,6 +955,8 @@ namespace FullRareSetManager
                 newItem.ItemClass = bit.ClassName;
                 newItem.ItemName = bit.BaseName;
                 newItem.ItemType = GetStashItemTypeByClassName(newItem.ItemClass);
+                newItem.Width = bit.Width;
+                newItem.Height = bit.Height;
 
                 if (newItem.ItemType != StashItemType.Undefined)
                     return newItem;
@@ -960,14 +980,14 @@ namespace FullRareSetManager
 
             switch (className)
             {
-                case "Bow": return StashItemType.TwoHanded;
-                case "Staff": return StashItemType.TwoHanded;
-                case "Sceptre": return StashItemType.OneHanded;
                 case "Wand": return StashItemType.OneHanded;
                 case "Dagger": return StashItemType.OneHanded;
+                case "Rune Dagger": return StashItemType.OneHanded;
+                case "Sceptre": return StashItemType.OneHanded;
                 case "Claw": return StashItemType.OneHanded;
                 case "Shield": return StashItemType.OneHanded;
-				case "Rune Dagger": return StashItemType.OneHanded;
+                case "Bow": return StashItemType.TwoHanded;
+                case "Staff": return StashItemType.TwoHanded;
 				case "Warstaff": return StashItemType.TwoHanded;
 
 				case "Ring": return StashItemType.Ring;
@@ -1102,9 +1122,12 @@ namespace FullRareSetManager
                 return;
 
             var playerInv = GameController.Game.IngameState.IngameUi.InventoryPanel[InventoryIndex.PlayerInventory];
-            var visibleInventoryItems = playerInv.VisibleInventoryItems;
+            var visibleInventoryItems = playerInv.VisibleInventoryItems ?? null;
 
-            if (visibleInventoryItems == null)
+            if (visibleInventoryItems == null || visibleInventoryItems.Count == 0)
+                return;
+
+            if (playerInv.HoverItem != null && !Settings.LablesWhileHovered)
                 return;
 
             foreach (var inventItem in visibleInventoryItems)
@@ -1147,6 +1170,38 @@ namespace FullRareSetManager
 
         private bool DrawBorder(long entityAddress, ItemDisplayData data)
         {
+            if (GameController.Game.IngameState.IngameUi.Atlas.IsVisible)
+                return false;
+
+            if (GameController.Game.IngameState.IngameUi.BetrayalWindow.IsVisible)
+                return false;
+
+            if (GameController.Game.IngameState.IngameUi.CraftBench.IsVisible)
+                return false;
+
+            if (GameController.Game.IngameState.IngameUi.DelveWindow.IsVisible)
+                return false;
+
+            if (GameController.Game.IngameState.IngameUi.IncursionWindow.IsVisible)
+                return false;
+
+            /*
+            if (GameController.Game.IngameState.IngameUi.MetamorphWindow.IsVisible)
+                return false;
+            */
+
+            if (GameController.Game.IngameState.IngameUi.TreePanel.IsVisible)
+                return false;
+
+            if (GameController.Game.IngameState.IngameUi.UnveilWindow.IsVisible)
+                return false;
+
+            if (GameController.Game.IngameState.IngameUi.ZanaMissionChoice.IsVisible)
+                return false;
+
+            if (Settings.Ignore1 && data.PriorityPercent == 1 && 
+                !(data.BaseData.PartName == "Amulets" || data.BaseData.PartName == "Rings")) return false;
+
             var ui = GameController.Game.IngameState.IngameUi;
             var shouldUpdate = false;
 
