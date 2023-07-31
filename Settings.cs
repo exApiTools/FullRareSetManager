@@ -49,7 +49,7 @@ namespace FullRareSetManager
         public RangeNode<int> MaxSets { get; set; } = new RangeNode<int>(0, 0, 30);
 
         [Menu("Drop To Invent Key", "It will also drop items to NPC trade window inventory")]
-        public HotkeyNode DropToInventoryKey { get; set; } = Keys.F5;
+        public HotkeyNode DropToInventoryKey { get; set; } = Keys.F13;
 
         [Menu("Extra Click Delay")]
         public RangeNode<int> ExtraDelay { get; set; } = new RangeNode<int>(50, 0, 2000);
