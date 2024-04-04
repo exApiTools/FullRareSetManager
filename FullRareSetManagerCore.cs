@@ -435,8 +435,9 @@ namespace FullRareSetManager
                         var item = curPreparedItem;
 
                         var foundItem =
-                            _currentOpenedStashTab.VisibleInventoryItems.FirstOrDefault(
-                                x => x.InventPosX == item.InventPosX && x.InventPosY == item.InventPosY);
+                        _currentOpenedStashTab.VisibleInventoryItems.FirstOrDefault(
+                        x => x.Item?.GetComponent<Base>()?.Name == item.ItemName
+                        );
 
                         var curItemsCount = _currentOpenedStashTab.VisibleInventoryItems.Count;
 
