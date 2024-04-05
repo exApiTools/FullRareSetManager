@@ -544,7 +544,7 @@ namespace FullRareSetManager
                                             x.InventPosX == item.InventPosX && 
                                             x.InventPosY == item.InventPosY);
                                         if (foundItem != null)
-                                        {
+                                        
                                             // Highlight the item frame in the stash
                                             Graphics.DrawFrame(foundItem.GetClientRect(), Color.Yellow, 2);
                                         }
