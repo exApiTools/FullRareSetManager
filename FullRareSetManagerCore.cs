@@ -537,14 +537,17 @@ namespace FullRareSetManager
 
                                 if (!inInventory && curStashOpened)
                                 {
-                                    var item = curPreparedItem;
-
-                                    var foundItem =
-                                        visibleInventoryItems.FirstOrDefault(x => x.InventPosX == item.InventPosX && x.InventPosY == item.InventPosY);
-
-                                    if (foundItem != null)
-                                        Graphics.DrawFrame(foundItem.GetClientRect(), Color.Yellow, 2);
-                                }
+                                        var item = curPreparedItem;
+                                        // Enhanced check for item name alongside position
+                                        var foundItem = visibleInventoryItems.FirstOrDefault(x =>
+                                            x.Item?.GetComponent<Base>()?.Name == item.ItemName &&
+                                            x.InventPosX == item.InventPosX && 
+                                            x.InventPosY == item.InventPosY);
+                                        if (foundItem != null)
+                                        {
+                                            // Highlight the item frame in the stash
+                                            Graphics.DrawFrame(foundItem.GetClientRect(), Color.Yellow, 2);
+                                        }
 
                                 var levelDesignation = curPreparedItem.LowLvl ? "L" : "H";
                                 Graphics.DrawText($"{curPreparedItem.StashName} ({curPreparedItem.ItemName}) {levelDesignation}",
