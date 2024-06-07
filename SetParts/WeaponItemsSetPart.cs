@@ -199,42 +199,12 @@ namespace FullRareSetManager.SetParts
             }
             */
 
-            var firstWeapon = OneHandedHighLvlItems[0];
-            var isShieldFirstWeapon = OneHandedHighLvlItems[0].ItemClass == "Shield";
-            var isShield = OneHandedHighLvlItems[1];
-            StashItem secondWeapon = null;
-            foreach (int idx in Enumerable.Range(1, OneHandedHighLvlItems.Count - 1))
-            {
-                if (isShieldFirstWeapon)
-                {
-                    if (OneHandedHighLvlItems[idx].ItemClass != "Shield")
-                    {
-                        secondWeapon = OneHandedHighLvlItems[idx];
-                        break;
-                    }
-                }
-                else
-                {
-                    var findShield = OneHandedHighLvlItems.FirstOrDefault(x => x.ItemClass == "Shield");
-                    if (findShield != null)
-                    {
-                        secondWeapon = findShield;
-                        break;
-                    }
-                    secondWeapon = OneHandedHighLvlItems[idx];
-                    break;
-                }
-            }
-            if (secondWeapon == null)
+            var needWeapon = CheckAndFindWeapons(OneHandedHighLvlItems, OneHandedHighLvlItems);
+            if (needWeapon == null)
             {
                 return null;
             }
-
-            _currentSetItems = new[]
-            {
-               firstWeapon,
-               secondWeapon
-            };
+            _currentSetItems = needWeapon;
 
             var inPlayerInvent = _currentSetItems[0].BInPlayerInventory || _currentSetItems[1].BInPlayerInventory;
 
@@ -265,41 +235,12 @@ namespace FullRareSetManager.SetParts
             }
             */
 
-            var firstWeapon = OneHandedHighLvlItems[0];
-            var isShieldFirstWeapon = OneHandedHighLvlItems[0].ItemClass == "Shield";
-            var isShield = OneHandedHighLvlItems[1];
-            StashItem secondWeapon = null;
-            foreach (int idx in Enumerable.Range(1, OneHandedLowLvlItems.Count - 1))
-            {
-                if (isShieldFirstWeapon)
-                {
-                    if (OneHandedLowLvlItems[idx].ItemClass != "Shield")
-                    {
-                        secondWeapon = OneHandedLowLvlItems[idx];
-                        break;
-                    }
-                }
-                else
-                {
-                    var findShield = OneHandedLowLvlItems.FirstOrDefault(x => x.ItemClass == "Shield");
-                    if (findShield != null)
-                    {
-                        secondWeapon = findShield;
-                        break;
-                    }
-                    secondWeapon = OneHandedLowLvlItems[idx];
-                    break;
-                }
-            }
-            if (secondWeapon == null)
+            var needWeapon = CheckAndFindWeapons(OneHandedHighLvlItems, OneHandedLowLvlItems);
+            if (needWeapon == null)
             {
                 return null;
             }
-            _currentSetItems = new[]
-            {
-                firstWeapon,
-               secondWeapon
-            };
+            _currentSetItems = needWeapon;
 
             var replCount = TwoHandedLowLvlItems.Count;
             var oneHandedLowCount = OneHandedLowLvlItems.Count - 1;
@@ -366,42 +307,13 @@ namespace FullRareSetManager.SetParts
                     .ToList();
             }
             */
-            var firstWeapon = OneHandedLowLvlItems[0];
-            var isShieldFirstWeapon = OneHandedLowLvlItems[0].ItemClass == "Shield";
-            var isShield = OneHandedLowLvlItems[1];
-            StashItem secondWeapon = null;
-            foreach (int idx in Enumerable.Range(1, OneHandedLowLvlItems.Count - 1))
-            {
-                if (isShieldFirstWeapon)
-                {
-                    if (OneHandedLowLvlItems[idx].ItemClass != "Shield")
-                    {
-                        secondWeapon = OneHandedLowLvlItems[idx];
-                        break;
-                    }
-                }
-                else
-                {
-                    var findShield = OneHandedLowLvlItems.FirstOrDefault(x => x.ItemClass == "Shield");
-                    if (findShield != null)
-                    {
-                        secondWeapon = findShield;
-                        break;
-                    }
-                    secondWeapon = OneHandedLowLvlItems[idx];
-                    break;
-                }
-            }
-            if (secondWeapon == null)
+
+            var needWeapon = CheckAndFindWeapons(OneHandedLowLvlItems, OneHandedLowLvlItems);
+            if (needWeapon == null)
             {
                 return null;
             }
-
-            _currentSetItems = new[]
-            {
-                firstWeapon,
-                secondWeapon
-            };
+            _currentSetItems = needWeapon;
 
             var replCount = LowSetsCount() - 2;
             var inPlayerInvent = _currentSetItems[0].BInPlayerInventory || _currentSetItems[1].BInPlayerInventory;
@@ -412,6 +324,43 @@ namespace FullRareSetManager.SetParts
                 LowSet = true,
                 BInPlayerInvent = inPlayerInvent
             };
+        }
+        private static StashItem[] CheckAndFindWeapons(List<StashItem> fistItems, List<StashItem> secondItems)
+        {
+            var firstWeapon = fistItems[0];
+            var isShieldFirstWeapon = fistItems[0].ItemClass == "Shield";
+            StashItem secondWeapon = null;
+            foreach (int idx in Enumerable.Range(0, secondItems.Count - 1))
+            {
+                if (firstWeapon.StashIndex == secondItems[idx].StashIndex)
+                {
+                    continue;
+                }
+                if (isShieldFirstWeapon)
+                {
+                    if (secondItems[idx].ItemClass != "Shield")
+                    {
+                        secondWeapon = secondItems[idx];
+                        break;
+                    }
+                }
+                else
+                {
+                    var findShield = secondItems.FirstOrDefault(x => x.ItemClass == "Shield");
+                    if (findShield != null)
+                    {
+                        secondWeapon = findShield;
+                        break;
+                    }
+                    secondWeapon = secondItems[idx];
+                    break;
+                }
+            }
+            if (secondWeapon == null)
+            {
+                return null;
+            }
+            return [firstWeapon, secondWeapon];
         }
 
         public override void DoLowItemReplace()
