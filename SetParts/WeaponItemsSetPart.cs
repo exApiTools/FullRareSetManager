@@ -330,9 +330,9 @@ namespace FullRareSetManager.SetParts
             var firstWeapon = fistItems[0];
             var isShieldFirstWeapon = fistItems[0].ItemClass == "Shield";
             StashItem secondWeapon = null;
-            foreach (int idx in Enumerable.Range(0, secondItems.Count - 1))
+            for (int idx = 0; idx < secondItems.Count; idx++)
             {
-                if (firstWeapon.StashIndex == secondItems[idx].StashIndex)
+                if (firstWeapon.Equals(secondItems[idx]))
                 {
                     continue;
                 }
@@ -360,7 +360,7 @@ namespace FullRareSetManager.SetParts
             {
                 return null;
             }
-            return [firstWeapon, secondWeapon];
+            return new[] { firstWeapon, secondWeapon };
         }
 
         public override void DoLowItemReplace()
