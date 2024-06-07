@@ -8,6 +8,7 @@ namespace FullRareSetManager
 {
     public class FullRareSetManagerSettings : ISettings
     {
+        public ButtonNode ResetData { get; set; } = new ButtonNode();
         public List<int> AllowedStashTabs = new List<int>();
 
         [Menu("", "Registering after using DropToInventoryKey to NPC trade inventory")]
@@ -35,12 +36,12 @@ namespace FullRareSetManager
         [Menu("Show Regal sets")]
         public ToggleNode ShowRegalSets { get; set; } = new ToggleNode(false);
 
-        [Menu("Optimize for Chaos sets","will pickup at least 1 low level item and others will be high level")]
+        [Menu("Optimize for Chaos sets", "will pickup at least 1 low level item and others will be high level")]
         public ToggleNode OptimizeChaosSets { get; set; } = new ToggleNode(true);
 
         [Menu("Priority",
             "Weapon prepare priority in list of set items. If you have 1-handed and 2-handed weapons- it will consider this option.")]
-        public ListNode WeaponTypePriority { get; set; } = new ListNode {Value = "Two handed"};
+        public ListNode WeaponTypePriority { get; set; } = new ListNode { Value = "Two handed" };
 
         [Menu("Only small weapons", "Small means 1x3 slots weapon.")]
         public ToggleNode SmallWeaponOnly { get; set; } = new ToggleNode(false);
