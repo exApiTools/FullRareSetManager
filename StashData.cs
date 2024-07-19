@@ -74,6 +74,29 @@ namespace FullRareSetManager
                 DebugWindow.LogError($"Unable to save settings: {ex}");
             }
         }
+        public static bool Reset(FullRareSetManagerCore plugin)
+        {
+            try
+            {
+                var dataFileFullPath = Path.Join(plugin.ConfigDirectory, StashDataFile);
+                if (!File.Exists(dataFileFullPath))
+                {
+                    return true;
+                }
+                using var stream = new StreamWriter(File.Create(dataFileFullPath));
+                var json = JsonConvert.SerializeObject(new StashData(), Formatting.Indented);
+                stream.Write(json);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                DebugWindow.LogError(
+                    $"Cannot reset StashData:\n {ex}",
+                    10);
+                return false;
+            }
+
+        }
     }
 
     public class StashTabData
@@ -109,6 +132,6 @@ namespace FullRareSetManager
         Amulet = 6,
         Ring = 7,
         TwoHanded = 8,
-        OneHanded = 9
+        OneHanded = 9,
     }
 }

@@ -62,7 +62,11 @@ namespace FullRareSetManager
         {
             Input.RegisterKey(Settings.DropToInventoryKey.Value);
             _sData = StashData.Load(this) ?? new StashData();
-
+            Settings.ResetData.OnPressed += () =>
+            {
+                if (StashData.Reset(this))
+                    _sData = new StashData();
+            };
             _inventDrop = new DropAllToInventory(this);
 
             DisplayData = new ItemDisplayData[8];
@@ -233,7 +237,7 @@ namespace FullRareSetManager
                 else
                 {
                     _routine = null;
-                    foreach (var key in new Keys[] { Keys.LControlKey , Keys.Left, Keys.Right})
+                    foreach (var key in new Keys[] { Keys.LControlKey, Keys.Left, Keys.Right })
                     {
                         if (Input.IsKeyDown(key))
                         {
@@ -537,17 +541,17 @@ namespace FullRareSetManager
 
                                 if (!inInventory && curStashOpened)
                                 {
-                                        var item = curPreparedItem;
-                                        // Enhanced check for item name alongside position
-                                        var foundItem = visibleInventoryItems.FirstOrDefault(x =>
-                                            x.Item?.GetComponent<Base>()?.Name == item.ItemName &&
-                                            x.InventPosX == item.InventPosX && 
-                                            x.InventPosY == item.InventPosY);
-                                        if (foundItem != null)
-                                        
-                                            // Highlight the item frame in the stash
-                                            Graphics.DrawFrame(foundItem.GetClientRect(), Color.Yellow, 2);
-                                        }
+                                    var item = curPreparedItem;
+                                    // Enhanced check for item name alongside position
+                                    var foundItem = visibleInventoryItems.FirstOrDefault(x =>
+                                        x.Item?.GetComponent<Base>()?.Name == item.ItemName &&
+                                        x.InventPosX == item.InventPosX &&
+                                        x.InventPosY == item.InventPosY);
+                                    if (foundItem != null)
+
+                                        // Highlight the item frame in the stash
+                                        Graphics.DrawFrame(foundItem.GetClientRect(), Color.Yellow, 2);
+                                }
 
                                 var levelDesignation = curPreparedItem.LowLvl ? "L" : "H";
                                 Graphics.DrawText($"{curPreparedItem.StashName} ({curPreparedItem.ItemName}) {levelDesignation}",
@@ -795,7 +799,7 @@ namespace FullRareSetManager
             {
                 return;
             }
-            
+
             _currentOpenedStashTab = stashPanel.VisibleStash;
             var visibleStashIndex = stashPanel.IndexVisibleStash;
             var openedStashTabName = stashPanel.GetStashName(visibleStashIndex);

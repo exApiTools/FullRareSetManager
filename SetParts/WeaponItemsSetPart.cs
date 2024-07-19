@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ExileCore.Shared.Static;
 
 namespace FullRareSetManager.SetParts
 {
@@ -198,11 +199,12 @@ namespace FullRareSetManager.SetParts
             }
             */
 
-            _currentSetItems = new[]
+            var needWeapon = CheckAndFindWeapons(OneHandedHighLvlItems, OneHandedHighLvlItems);
+            if (needWeapon == null)
             {
-                OneHandedHighLvlItems[0],
-                OneHandedHighLvlItems[1]
-            };
+                return null;
+            }
+            _currentSetItems = needWeapon;
 
             var inPlayerInvent = _currentSetItems[0].BInPlayerInventory || _currentSetItems[1].BInPlayerInventory;
 
@@ -233,11 +235,12 @@ namespace FullRareSetManager.SetParts
             }
             */
 
-            _currentSetItems = new[]
+            var needWeapon = CheckAndFindWeapons(OneHandedHighLvlItems, OneHandedLowLvlItems);
+            if (needWeapon == null)
             {
-                OneHandedHighLvlItems[0],
-                OneHandedLowLvlItems[0]
-            };
+                return null;
+            }
+            _currentSetItems = needWeapon;
 
             var replCount = TwoHandedLowLvlItems.Count;
             var oneHandedLowCount = OneHandedLowLvlItems.Count - 1;
@@ -305,11 +308,12 @@ namespace FullRareSetManager.SetParts
             }
             */
 
-            _currentSetItems = new[]
+            var needWeapon = CheckAndFindWeapons(OneHandedLowLvlItems, OneHandedLowLvlItems);
+            if (needWeapon == null)
             {
-                OneHandedLowLvlItems[0],
-                OneHandedLowLvlItems[1]
-            };
+                return null;
+            }
+            _currentSetItems = needWeapon;
 
             var replCount = LowSetsCount() - 2;
             var inPlayerInvent = _currentSetItems[0].BInPlayerInventory || _currentSetItems[1].BInPlayerInventory;
@@ -320,6 +324,43 @@ namespace FullRareSetManager.SetParts
                 LowSet = true,
                 BInPlayerInvent = inPlayerInvent
             };
+        }
+        private static StashItem[] CheckAndFindWeapons(List<StashItem> fistItems, List<StashItem> secondItems)
+        {
+            var firstWeapon = fistItems[0];
+            var isShieldFirstWeapon = fistItems[0].ItemClass == "Shield";
+            StashItem secondWeapon = null;
+            for (int idx = 0; idx < secondItems.Count; idx++)
+            {
+                if (firstWeapon.Equals(secondItems[idx]))
+                {
+                    continue;
+                }
+                if (isShieldFirstWeapon)
+                {
+                    if (secondItems[idx].ItemClass != "Shield")
+                    {
+                        secondWeapon = secondItems[idx];
+                        break;
+                    }
+                }
+                else
+                {
+                    var findShield = secondItems.FirstOrDefault(x => x.ItemClass == "Shield");
+                    if (findShield != null)
+                    {
+                        secondWeapon = findShield;
+                        break;
+                    }
+                    secondWeapon = secondItems[idx];
+                    break;
+                }
+            }
+            if (secondWeapon == null)
+            {
+                return null;
+            }
+            return new[] { firstWeapon, secondWeapon };
         }
 
         public override void DoLowItemReplace()
